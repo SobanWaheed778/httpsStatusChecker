@@ -1,3 +1,4 @@
+import streamlit as st
 import requests
 
 class DeadLinkDetectorAgent:
@@ -17,31 +18,38 @@ class DeadLinkDetectorAgent:
     # Method to scan all URLs and identify broken links
     def scan_links(self):
         for url in self.urls:
-            print(f"Checking {url}...")
+            st.write(f"Checking {url}...")
             self.check_link(url)
 
     # Action: Report broken links
     def report(self):
         if self.broken_links:
-            print("\n🚨 Broken Links Detected:")
+            st.write("🚨 **Broken Links Detected:**")
             for url, error in self.broken_links:
-                print(f" - {url} returned error {error}")
+                st.write(f" - **{url}** returned error {error}")
         else:
-            print("\n✅ No broken links found.")
+            st.write("✅ **No broken links found.**")
 
 # -------------------------
-# User Input / Simulation
+# Streamlit User Interface
 # -------------------------
-def run_simulation():
-    # Get URLs from the user (you can input as a list of URLs)
-    urls = input("Enter URLs to check (comma separated): ").split(',')
+def run_streamlit_simulation():
+    st.title("🔗 Dead Link Detector")
 
-    # Initialize the Dead Link Detector Agent
-    agent = DeadLinkDetectorAgent(urls)
+    # Get URLs from the user (via Streamlit input box)
+    urls_input = st.text_area("Enter URLs to check (comma separated)", "", height=100)
+    
+    if st.button("Check Links"):
+        if urls_input:
+            urls = [url.strip() for url in urls_input.split(',')]
+            # Initialize the Dead Link Detector Agent
+            agent = DeadLinkDetectorAgent(urls)
 
-    # Run the scan and report
-    agent.scan_links()
-    agent.report()
+            # Run the scan and display the result
+            agent.scan_links()
+            agent.report()
+        else:
+            st.warning("Please enter at least one URL to check.")
 
 if __name__ == "__main__":
-    run_simulation()
+    run_streamlit_simulation()
